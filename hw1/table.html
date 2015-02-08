@@ -1,14 +1,64 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="utf-8">
+<head>
+<style>
+table,th,td{
+  text-align: middle;
+  border: 1px solid gray
+}
+tbody tr:nth-child(odd) {
+ /* apply zebra pattern to table body */
+   background-color: #ccc;
+}
+</style>
+</head>
   <body>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script>
+  Time update: 1995
+  <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput=";" >
+   2012
+  <br>
+  Filter by:
+  <label>Americas<input type="checkbox" name="Americas" value="Americas" title="Americas" onchange"('changed!')"></input></label>
+  <label>Africa<input type="checkbox" name="Africa" value="Africa" title="Africa" onchange"('changed!')"></input></label>
+  <label>Asia<input type="checkbox" name="Asia" value="Asia" title="Asia" onchange"('changed!')"></input></label>
+  <label>Europe<input type="checkbox" name="Europe" value="Europe" title="Europe" onchange"('changed!')"></input></label>
+  <label>Oceania<input type="checkbox" name="Oceania" value="Oceania" title="Oceania" onchange"('changed!')"></input></label>
+  <br>
+  Aggregation:
+  <label>None<input type="radio" name="None" value="None" onclick=""></label>
+  <label>by Continent<input type="radio" name="by Continent" value="by Continent" onclick=""></label>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+ 
+   <script>
 
-      d3.json("countries_2012.json", function(error, data){
+      d3.json("data/countries_2012.json", function(error, data){
+
         
-        var columns = Object.keys(data.data[0]);
+		// data is the array in the json file, data[0],data[1] refers the 1st, 2nd element(list)
+		// object.keys get the key (the other half is value) of each element, since all elements
+		// have the same keys, only values differ, thus the number in the square bracket could be
+		// any as long as it is within the range, var  columns is the key( head value arrays)
+		var columns = Object.keys(data[1])
 
+		// use slice and concat to select and form a new array as head
+		var head = columns.slice(6,7).concat(columns.slice(1,2),columns.slice(2,3),columns.slice(4,5),columns.slice(7));
+		
+		// create a new array to hold the selected columns' rows
+		var data_filtered = [];
+		
+		// create an object to be held within the data_filtered array, to hold each country's selected data
+		var data_filtertext = {};
+		
+		// use forEach function to fill in the new data array and apply text formatting using D3 for certain columns
+		data.forEach(function(country,i) {
+			data_filtertext[i] = {"name":country.name, "continent":country.continent, "gdp":d3.format(' .3s')(country.gdp), "life_expectancy":d3.round(country.life_expectancy,1),
+			"population":d3.format(',')(country.population), "year":country.year}
+			data_filtered.push(data_filtertext[i])
+			});
+		
+		// var table has three appends thead,tbody,caption
         var table = d3.select("body").append("table"),
           thead = table.append("thead")
                        .attr("class", "thead");
@@ -16,46 +66,48 @@
 
         table.append("caption")
           .html("World Countries Ranking");
-
+		  
+        //thead has one direct append tr, which has a class row declared later
         thead.append("tr").selectAll("th")
-          .data(columns)
+          .data(head)
         .enter()
           .append("th")
+		  //th under tr is the actual head of the table
+		  //d default is the whatever contained in the dataset(column)
+		  // it returns text as a function 
           .text(function(d) { return d; })
+		  // add an action when click occurs, sort 
           .on("click", function(header, i) {
             tbody.selectAll("tr").sort(function(a, b) {
               return d3.descending(a[header], b[header]);
             });
           });
 
+        // create tr.row, assign class row to tr
+		// all json file's array is entered into tr.row
         var rows = tbody.selectAll("tr.row")
-          .data(data.data)
+          .data(data_filtered)
           .enter()
           .append("tr").attr("class", "row");
-
+        
+		// create td, the value of each row,the data is a map function of column and row
         var cells = rows.selectAll("td")
           .data(function(row) {
-              return d3.range(Object.keys(row).length).map(function(column, i) {
+              return d3.range(Object.keys(row).length).map(function(head, i) {
                   return row[Object.keys(row)[i]];
               });
           })
           .enter()
           .append("td")
+		  //return the value in the above declared function
           .text(function(d) { return d; })
-          .on("mouseover", function(d, i) {
 
-            d3.select(this.parentNode)
-              .style("background-color", "#F3ED86");
-        
-          }).on("mouseout", function() {
-
-            tbody.selectAll("tr")
-              .style("background-color", null)
-              .selectAll("td")
-              .style("background-color", null);
-
-          });
-
+        d3.selectAll("input").each(function(d) { 
+        if(d3.select(this).attr("type") == "checkbox" && d3.select(this).node().checked) {
+        // Current name of the checkbox is d3.select(this).attr("name")
+	     return selection.text;
+        }
+});
       });
     </script> 
   </body>
