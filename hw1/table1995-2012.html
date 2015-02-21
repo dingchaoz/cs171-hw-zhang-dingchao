@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+  <style>
+    table{
+      border-collapse: collapse;
+    }
+    table,th,td, caption {
+        /*To add solid lines in the cells*/
+          border: solid 1px black;
+        }
+    tr:hover td{
+        background-color: LemonChiffon;
+    }
+    .col_gdp td:nth-child(3) {
+        text-align: right
+    }
+    .col-life td:nth-child(4) {
+        text-align: right
+    }
+    .col-population td:nth-child(5) {
+        text-align: right
+    }
+    tr:nth-child(odd) {
+        background: #FFCCCC;
+    }
+    tr:nth-child(even) {
+        background: white;
+    }
+    th{
+        background-color: #CCFFFF;
+    }
+    caption{
+        background-color: #99CCFF;
+    }
+    input[type='range'] {
+      -webkit-appearance: none;
+      box-shadow: inset 0 0 5px #333;
+      background-color: #999;
+      height: 5px;
+      width: 250px;
+      vertical-align: 4px;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none !important;
+      border-radius: 20px;
+      background-color: #FFF;
+      box-shadow:inset 0 0 10px rgba(000,000,000,0.5);
+      border: 1px solid #999;
+      height: 20px;
+      width: 20px;
+    }
+
+  </style>
+</head>
+  <body>
+    <!--<script src="http://d3js.org/d3.v3.min.js"></script> -->
+    <script src="d3.min.js"></script>
+    <script>
+
+    var sorting = ""
+    var dataset = []
+    var dyear = []
+    var selectedYear = ""
+    var selDataset = []
+    var aggr_on = "";
+    var selConti = [];
+
+    d3.json("data/countries_1995_2012.json", function(error, data){
+      //render
+      data.map(function(d,i){
+            for (i = 0; i < d.years.length; i++) {
+                var dat = {
+                  name: d.name,
+                  continent: d.continent,
+                  gdp: d.years[i].gdp,
+                  life_expectancy: d.years[i].life_expectancy,
+                  population: d.years[i].population,
+                  year: d.years[i].year
+                };
+            
+                dataset.push(dat);
+
+                //for min and max
+                dyear.push(d.years[i].year);
+
+            }
+                return;         
+      });
+
+      //Time update
+      //Min
+      var labelmin = document.getElementById('yearmin');
+      var year_min = d3.min(dyear);
+      labelmin.textContent = year_min;
+      selectedYear = year_min;
+      //Max
+      var labelmax = document.getElementById('yearmax');
+      var year_max = d3.max(dyear)
+      labelmax.textContent = year_max;
+
+      //render(dataset,[]);
+      rangechanged(year_min);
+    });
+
+    function render(dataset,filt_conti){
+
+      //var columns = Object.keys(dataset[0]); 
+      var columns = ["name","continent","gdp","life_expectancy","population","year"];
+
+      //init remove table
+      d3.select("body").selectAll("table").remove();
+
+      //draw table
+      var table = d3.select("body").append("table"),
+        thead = table.append("thead")
+                  .attr("class", "thead");
+        tbody = table.append("tbody")
+                  .attr("class", "col_gdp col-life col-population");
+
+      table.append("caption")
+        .html("World Countries Ranking");
+
+      thead.append("tr").selectAll("th")
+        .data(columns)
+        .enter()
+        .append("th")
+        .text(function(d) { return d; })
+        .on("click", function(header, i) {
+          if (sorting == "desc"){
+            sorting = "asc"
+            tbody.selectAll("tr").sort(function(a, b) {
+                return d3.ascending(a[header], b[header]);
+            });
+          }
+          else{
+            sorting ="desc"
+            tbody.selectAll("tr").sort(function(a, b) {
+              return d3.descending(a[header], b[header]);
+            });
+          }
+          //background-color-stripe
+          //zebra();
+        });
+
+      //tate
+      var rows = tbody.selectAll("tr.row")
+        .data(dataset)
+        .enter()
+        .append("tr").attr("class", "row")
+        .filter(function (d){
+            if (filt_conti.length == 0)
+              return d.continent;
+            else
+              return (d.continent == filt_conti[0]
+                || d.continent == filt_conti[1] 
+                || d.continent == filt_conti[2] 
+                || d.continent == filt_conti[3] 
+                || d.continent == filt_conti[4]); 
+        });
+
+      //yoko
+      var cells = rows.selectAll("td")
+        .data(function(row) {
+                return d3.range(columns.length).map(function(column, i) {
+                  //gdp
+                  if (column == 2){
+                    var rdata = row[columns[i]];
+                    var rscale = d3.formatPrefix(rdata).scale(rdata).toFixed(1);
+                    var rsymbol = d3.formatPrefix(rdata).symbol;
+                    return rscale + rsymbol;
+                  }
+                  //life_expectancy
+                  else if (column == 3)
+                    return row[columns[i]].toFixed(1);
+                  //population
+                  else if (column == 4){
+                    fcomma = d3.format(",");
+                    return fcomma(row[columns[i]].toFixed(0));
+                  }
+                  else
+                    return row[columns[i]];
+            });
+        })
+        .enter()
+        .append("td")
+        .text(function(d) { return d; })
+
+        //ONCLICK--header
+        // d3.select("th")
+        //   .on("click", function() {
+        //   //Do something mundane and annoying on click
+        //   alert("Hey, don't click that!");
+        // });
+
+        //background-color-stripe
+        //zebra();
+    };
+
+    //Filter-when checkbox is checked
+    function boxchanged(){
+        selConti = [];
+        //time update
+        rangechanged(selectedYear);
+
+        d3.selectAll("input").each(function(d) {  
+          if(d3.select(this).attr("type") == "checkbox" && d3.select(this).node().checked) {
+              // Current name of the checkbox is d3.select(this).attr("name")
+              selConti.push(d3.select(this).attr("name"));
+          }
+        })
+        if (aggr_on)
+          radiochanged();
+        else
+          render(selDataset,selConti);
+    }
+
+    //when aggrigation on
+    function radiochanged(){
+      aggr_on = false;
+      d3.selectAll("input").each(function(d) {
+          if(d3.select(this).attr("type") == "radio" && d3.select(this).node().checked) {
+              // Current name of the checkbox is d3.select(this).attr("name")
+              if (d3.select(this).attr("value") == "True")
+                aggr_on = true;
+          }
+      })
+      
+      if (aggr_on){
+        var nested_rows = d3.nest()
+          .key(function(d) { return d.continent; })
+          .key(function(d){ return d.year; })
+          .rollup(function(leaves) { 
+            return {
+              "gdp": d3.sum(leaves, function(d){return d.gdp;}),
+              "life_expectancy": d3.mean(leaves,function(d){return d.life_expectancy}),
+              "population": d3.mean(leaves, function(d){return d.population;})
+            }
+          }) // Where aggregation happens
+          .entries(selDataset);
+          //.map(dataset,d3.map)
+
+          //render
+          flat_results = nested_rows.map(function(d){
+            return {name:d.key,continent:d.key,year:d.values[0].key,gdp:d.values[0].values.gdp,life_expectancy:d.values[0].values.life_expectancy,population:d.values[0].values.population};
+          })
+          render(flat_results,selConti);
+
+      }else{
+          //No Aggregation
+          rangechanged(selectedYear);
+      };
+    }
+
+    //Range
+    function rangechanged(newVal){
+
+        var indexed_data = []
+        var tmpdata = []
+
+        //preserve in Global
+        selectedYear = newVal;
+
+        dataset.map(function(d,i){
+            if (d.year == newVal){
+                tmpdata.push(d);  
+            }
+            indexed_data[newVal] = tmpdata
+        });
+
+        //preserve in Global
+        selDataset = indexed_data[newVal];
+        //render
+        if(aggr_on == true)
+          radiochanged();
+        else
+          render(selDataset,selConti);
+    }
+
+    </script> 
+    <P>
+      Time update: 
+      <label id="yearmin" value="">----</label>
+      <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput="rangechanged(this.value)"> 
+      <label id="yearmax" value="">----</label>
+      </br>Filter by: 
+      <label>
+        <input type="checkbox" name="Americas" value="Americas" title="Americas" onchange="boxchanged()">
+        </input>Americas
+      </label>
+      <label>
+        <input type="checkbox" name="Africa" value="Africa" title="Africa" onchange="boxchanged()">
+        </input>Africa
+      </label>
+      <label>
+        <input type="checkbox" name="Asia" value="Asia" title="Asia" onchange="boxchanged()">
+        </input>Asia
+      </label>
+      <label>
+        <input type="checkbox" name="Europe" value="Asia" title="Europe" onchange="boxchanged()">
+        </input>Europe
+      </label>
+      <label>
+        <input type="checkbox" name="Oceania" value="Oceania" title="Oceania" onchange="boxchanged()">Oceania
+        </input>
+      </label>
+      <br>
+      Aggregation:
+      <label><input type="radio" name="aggr" value="False" onchange="radiochanged()" checked="checked">None
+      <input type="radio" name="aggr" value="True" onchange="radiochanged()" >by Continent</label>
+
+    </P>
+  </body>
+</html>
