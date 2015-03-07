@@ -5,7 +5,7 @@
 	<style>
 
 	.link {
-	  stroke: grey;
+	  stroke: steelblue;
 	  stroke-opacity: .4;
 	  fill: none;
 	  pointer-events: none;
@@ -16,37 +16,27 @@
 		fill: white;
 		stroke: #000;
 		stroke-width: .9px;
-		opacity : 1;
 	}
 
 	.node:hover {
-		fill: blue;
+		fill: black;
 	}
-	
-	
 	.node:hover,
 	.node--colored {
-	font-weight: 700;
-    opacity : 1;	
+	  font-weight: 700;
 	}
 
 	.node--colored {
-	  fill: red;
-	  
+	  fill: #2ca02c;
 	}
-	
-	.node--light {
-	
-	  opacity : 0.1;
-	 
-	}
+
 	.link--colored {
 	  stroke-opacity: 1;
 	  stroke-width: 1.2;
 	}
 
 	.link--colored {
-	  stroke: yellow;
+	  stroke: #000066;
 	}
 	.text{
 	fill: black;
@@ -60,42 +50,42 @@
  <table>
 		<tr>
 			<td>Layout:</td>
-			<td><label><input type="radio" name="layout" value="force" checked> Nodes Layout</label>
+			<td><label><input type="radio" name="layout" value="force" checked> Nodes</label>
 			</td>
 		</tr>
 		<tr>
 			<td></td>
-			<td style="text-align: right;"></td>
+			<td style="text-align: right;">&#9658;</td>
 			<td>Rankings:</td>
-			<td><label><input type="radio" name="ranking" value="norank" checked>Equal Distance </label>
+			<td><label><input type="radio" name="ranking" value="norank" checked> None</label>
 			</td>
-			<td><label><input type="radio" name="ranking" value="rank" > Linear Distance</label>
-				
+			<td><label><input type="radio" name="ranking" value="rank" > Rankings</label>
+				&nbsp;&nbsp;&nbsp;
 			</td>
 			<td>Key:<select id="selectKeys" onchange="keyChanged(this);">
+			<option value="gdp" selected="selected"> GDP</option>
 			<option value="population" > Population</option>
-            <option value="gdp" selected="selected"> GDP</option>
-			<option value="life_expectancy" > Life expectancy</option>
+			<option value="life_expectancy" > Life_expectancy</option>
 			</select>
 			</td>
 		</tr>
 		<tr>
 			<td></td>
-			<td style="text-align: right;"></td>
+			<td style="text-align: right;">&#9658;</td>
 			<td>Scatterplot:</td>
-			<td><label><input type="radio" name="ranking" value="growth"> X:Population Y:GDP</label>
+			<td><label><input type="radio" name="ranking" value="growth"> Population/GDP</label>
 			</td>
-			<td><label><input type="radio" name="ranking" value="location" > X:Longitude Y:Latitude</label>
-			</td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><label><input type="radio" name="layout" value="circular"> Circular Layout</label> 
+			<td><label><input type="radio" name="ranking" value="location" > Longitude/Latitude</label>
 			</td>
 		</tr>
 		<tr>
 			<td></td>
-			<td style="text-align: right;"></td>
+			<td><label><input type="radio" name="layout" value="circular"> Circular</label> 
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="text-align: right;">&#9658;</td>
 			<td>Sortkey:</td>
 			<td><label><input type="radio" name="circle" value="cir_gdp" checked> GDP</label>
 			</td>
@@ -103,23 +93,23 @@
 		</tr>
 		<tr>
 			<td></td>
-			<td style="text-align: right;"></td>
+			<td style="text-align: right;">&#9658;</td>
 			<td>Grouped:</td>
-			<td><label><input type="radio" name="circle2" value="cir_none" checked> No Group </label>
+			<td><label><input type="radio" name="circle2" value="cir_none" checked> None </label>
 			</td>
 			<td><label><input type="radio" name="circle2" value="cir_grouped"> By Continent </label>
 			</td>
 		</tr>
 		<tr>
 			<td></td>
-			<td><label><input type="radio" name="layout" value="grouped"> Grouped Layout</label> 
+			<td><label><input type="radio" name="layout" value="grouped"> Grouped</label> 
 			</td>
 		</tr>
 		<tr>
 			<td></td>
-			<td style="text-align: right;"></td>
+			<td style="text-align: right;">&#9658;</td>
 			<td>Shape:</td>
-			<td><label><input type="radio" name="group" value="gr_none" checked> Divergent </label>
+			<td><label><input type="radio" name="group" value="gr_none" checked> None </label>
 			</td>
 			<td><label><input type="radio" name="group" value="gr_horizontal" checked> Horizontal </label>
 			</td>
@@ -127,6 +117,6 @@
 		</tr>
  </table>
 	<script src="d3.min.js"></script>
-	<script src="graph-work.js"></script>
+	<script src="graph.js"></script>
 	</body>
 </html>

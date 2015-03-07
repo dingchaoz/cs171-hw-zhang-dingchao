@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+	<style>
+
+	.link {
+	  stroke: grey;
+	  stroke-opacity: .4;
+	  fill: none;
+	  pointer-events: none;
+	  stroke-width: 1;
+	}
+
+	.node {
+		fill: white;
+		stroke: #000;
+		stroke-width: .9px;
+		opacity : 1;
+	}
+
+	.node:hover {
+		fill: blue;
+	}
+	
+	
+	.node:hover,
+	.node--colored {
+	font-weight: 700;
+    opacity : 1;	
+	}
+
+	.node--colored {
+	  fill: red;
+	  
+	}
+	
+	.node--light {
+	
+	  opacity : 0.1;
+	 
+	}
+	.link--colored {
+	  stroke-opacity: 1;
+	  stroke-width: 1.2;
+	}
+
+	.link--colored {
+	  stroke: yellow;
+	}
+	.text{
+	fill: black;
+	stroke-width: 0px;
+	font-size: .9em;
+	}
+	input[type='range'] {
+      -webkit-appearance: none;
+      box-shadow: inset 0 0 5px #333;
+      background-color: #999;
+      height: 5px;
+      width: 250px;
+      vertical-align: 4px;
+    }
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none !important;
+      border-radius: 20px;
+      background-color: #FFF;
+      box-shadow:inset 0 0 10px );
+      border: 1px solid #999;
+      height: 20px;
+      width: 20px;
+    }
+	</style>
+
+</head>
+<body>
+ <table>
+	  <tr>
+	  <td>Time update::</td> 
+      <label id="ymin" value="">1995</label>
+      <input type="range" name="points" min="1995" max="2012" step="1" value="0" id="slider-time" oninput="rangechanged(this.value)"> 
+      <label id="ymax" value="">2012</label>
+	  </tr>		
+		<tr>
+			<td>Layout:</td>
+			<td><label><input type="radio" name="layout" value="force" checked> Nodes Layout</label>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="text-align: right;"></td>
+			<td>Rankings:</td>
+			<td><label><input type="radio" name="ranking" value="norank" checked>Equal Distance </label>
+			</td>
+			<td><label><input type="radio" name="ranking" value="rank" > Linear Distance</label>
+				
+			</td>
+			<td>Key:<select id="selectKeys" onchange="keyChanged(this);">
+			<option value="population" > Population</option>
+            <option value="gdp" selected="selected"> GDP</option>
+			<option value="life_expectancy" > Life expectancy</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="text-align: right;"></td>
+			<td>Scatterplot:</td>
+			<td><label><input type="radio" name="ranking" value="growth"> X:Population Y:GDP</label>
+			</td>
+			<td><label><input type="radio" name="ranking" value="location" > X:Longitude Y:Latitude</label>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><label><input type="radio" name="layout" value="circular"> Circular Layout</label> 
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="text-align: right;"></td>
+			<td>Sortkey:</td>
+			<td><label><input type="radio" name="circle" value="cir_gdp" checked> GDP</label>
+			</td>
+			<td><label><input type="radio" name="circle" value="cir_pop" > Population</label>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="text-align: right;"></td>
+			<td>Grouped:</td>
+			<td><label><input type="radio" name="circle2" value="cir_none" checked> No Group </label>
+			</td>
+			<td><label><input type="radio" name="circle2" value="cir_grouped"> By Continent </label>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><label><input type="radio" name="layout" value="grouped"> Grouped Layout</label> 
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style="text-align: right;"></td>
+			<td>Shape:</td>
+			<td><label><input type="radio" name="group" value="gr_none" checked> Divergent </label>
+			</td>
+			<td><label><input type="radio" name="group" value="gr_horizontal" checked> Horizontal </label>
+			</td>
+			<td><label><input type="radio" name="group" value="gr_pie" > Pie </label>
+		</tr>
+ </table>
+	<script src="d3.min.js"></script>
+	<script src="graph-design.js"></script>
+	</body>
+</html>

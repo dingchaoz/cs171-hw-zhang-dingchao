@@ -1,0 +1,1 @@
+Added timeline range bar to veiw change of gdp,population,life_expectancy in ranking and scatter plot layout
