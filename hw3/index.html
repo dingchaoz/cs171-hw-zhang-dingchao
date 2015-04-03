@@ -7,7 +7,9 @@
     <!-- ADD Libraries-->
     <script src="libs/d3/d3.min.js" charset="utf-8"></script>
     <script src="libs/jquery/jquery-2.1.1.min.js" charset="utf-8"></script>
+	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="libs/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+	<script src="http://d3js.org/queue.v1.min.js"></script>
 
 
     <!--Stylesheets-->
@@ -59,24 +61,24 @@
         <div class="row">
             <div class="col-md-9" id="countVis">
                 <!-- TODO: delete placeholder svg element -->
-                <svg width="650" height="330" style="background-color: lightblue">
+                <!-- <svg width="650" height="330" style="background-color: lightblue">
                     <text x="50" y="50">HERE should be CountVis</text>
-                </svg>
+                </svg>-->
             </div>
             <div class="col-md-3" id="ageVis">
                 <!-- TODO: delete placeholder svg element -->
-                <svg width="230" height="330" style="background-color: lightcoral">
+                <!-- <svg width="230" height="330" style="background-color: lightcoral">
                     <text x="50" y="50">HERE should be AgeVis</text>
-                </svg>
+                </svg>-->
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-12" id="prioVis">
                 <!-- TODO: delete placeholder svg element -->
-                <svg width="650" height="440" style="background-color: lightgreen">
+                <!-- <svg width="650" height="440" style="background-color: lightgreen">
                     <text x="50" y="50">HERE should be PrioVis</text>
-                </svg>
+                </svg>-->
             </div>
 
         </div>
@@ -117,11 +119,20 @@
 
 
                 //TODO: Instantiate all Vis Objects here
-
-
-                // TODO: bind the eventHandler to the Vis Objects
+                // instantiates all Vis Objects here
+				debugger;
+               var count_vis = new CountVis(d3.select("#countVis"), allData, metaData, MyEventHandler);
+               var age_vis = new AgeVis(d3.select("#ageVis"), allData, metaData, MyEventHandler);
+               var prio_vis = new PrioVis(d3.select("#prioVis"), allData, metaData, MyEventHandler);
+                
+				// TODO: bind the eventHandler to the Vis Objects
+				//$(MyEventHandler).bind("selectionChanged", function(event, startData, endDate){
+				$(MyEventHandler).bind("selectionChanged", function(event, startDate,endDate){
+				   // events will be consumed by the PrioVis and AgeVis object (binding should happen here)
+                   age_vis.onSelectionChange(startDate, endDate);
+				   prio_vis.onSelectionChange(startData, endDate);
+                 });
                 // events will be created from the CountVis object (nothing to do here)
-                // events will be consumed by the PrioVis and AgeVis object (binding should happen here)
 
             }
 
@@ -137,7 +148,7 @@
                     *   time: .. (should be a Date object)
                     *   count: .. (number of all votes)
                     *   prios: [..,..,..,...] (array of number of votes per priority -> array length =16)
-                    *   ages: [..,..,..,..] (array counts of votes per age 0-99)
+                    *   ages: [..,..,..,..] (array counts of votes per age 0-100)
                     *
                     * */
 
@@ -152,8 +163,16 @@
                                 res.prios = []
                                 // should be an array of 16 numbers with the total count MAPping the prio values,
                                 //  [d["sum(p0)"], d["sum(p1)"], d["sum(p2)"],...]
-                                // Example:
+                                // Example: _allData[0]["sum(p1)"] 
                                 // [10,200,500,... ]
+								
+								for (i =0; i <16; i++) {
+								    num = i.toString();
+									pt1 = "sum(p";
+									pt2 = ")"
+									element = pt1.concat(num,pt2);
+									res.prios.push(d[element]);
+								}
 
 
                                 // This is ONE way to create an array of length 100
@@ -165,21 +184,47 @@
                                 // BE AWARE THAT THE DATA MIGHT CONTAIN ages >99 which you have to handle especially
                                 // final result:
                                 // [0,0,0,..,1034,23,...] -- array length is 100
+								// d.age[0]["count(*)"] -- 1, d.age[0]["age"] -- 25
+								// d.age has multiple elements, need to map each element within d.age and copy the value to such as res.ages[22] 
+								
+								for (i = 0; i < d.age.length; i++){
+								   index = d.age[i]["age"];
+								   if (index < 100) {
+								     res.ages[index] = d.age[i]["count(*)"];
+									 }
+								}
 
 
                                 return res;
                             }
                     )
-
+                    
                     metaData = _metaData;
+					
+					debugger;
                     initVis();
+					
+					
                 }
             }
 
             var startHere = function(){
+			
+			
+			    // Load data asynchronously
+		        queue()
+                  .defer(d3.json, "data/perDayData.json")
+                  .defer(d3.json, "data/MYWorld_fields.json")
+				  .await(dataLoaded);
+				  
+				// Call allLoaded function
+		        //allLoaded(allData, metaData);  
+				
 
                 //TODO: load data here and call "dataLoaded" afterwards
                 // Hint: http://giscollective.org/d3-queue-js/
+				dataLoaded(allData, metaData);
+				//initVis();
 
                 // bind reset zoom button to a function (-- ONLY FOR BONUS --)
                 d3.select("#fitInBtn").on("click", function() {
@@ -190,6 +235,13 @@
             }
 
             startHere();
+			
+			
+			
+			var getInnerWidth = function(element) {
+                var style = window.getComputedStyle(element.node(), null);
+                return parseInt(style.getPropertyValue('width'));
+                }
         })
     </script>
 </body>

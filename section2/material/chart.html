@@ -20,6 +20,9 @@
   <h1>Section 2: Data-driven documents</h1>
 
   <script type="text/javascript">
+  
+  
+  d3.json("weather.json", function(data) {
 
   var margin = {top: 40, bottom: 10, left: 20, right: 20};
   var width = 800 - margin.left - margin.right;
@@ -36,7 +39,6 @@
 
   /////////////////////////
 
-  var data = [10, 45, 105, 69, 80, 55, 180];
 
   var bar_height = 50;
 
@@ -49,7 +51,8 @@
     .enter().append("rect")
     .attr("fill", "steelblue")
     .attr("width", function(d, i) {
-        return scale(d);
+        console.log(d["temperature"]);
+		return scale(d["temperature"]);
     })
     .attr("height", bar_height)
     .attr("x", 0)
@@ -57,7 +60,13 @@
         // this could instead use an ordinal scale and rangeRoundBands()
         return (bar_height + 5) * i;
     });
-
+	
+	
+	rect.append("title")
+	  .text(function(d,i) {
+	     return d["location"]["city"]
+	  });
+});
   </script>
 </body>
 </html>

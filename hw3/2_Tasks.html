@@ -8,6 +8,7 @@
     <script src="libs/d3/d3.min.js" charset="utf-8"></script>
     <script src="libs/jquery/jquery-2.1.1.min.js" charset="utf-8"></script>
     <script src="libs/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+	<script src="http://d3js.org/queue.v1.min.js"></script>
 
     <script src="http://hs8.de/cs171_tests/tester.js"></script>
 
@@ -55,6 +56,8 @@
         var metaData = {};
 
         var dateFormatter = d3.time.format("%Y-%m-%d");
+		
+		
 
 
         var aggregateCountsForRange = function(from, to){
@@ -65,16 +68,34 @@
             // you might make use of the map and filter functions
             // HINT: javascript Date objects are comparable !!
             // see: http://www.w3schools.com/js/js_date_methods.asp
+				 
+		  // Create the filter which return true for those elements' date within the from, to range
+		   function filterBytime(element) {
+             if (element.time <= to && element.time >= from) {
+               return true;
+              } else {
+               return false;
+              }
+           }	 
+		  
+		   // Apply filterBytime to allData and put the filtered results to flt
+		   var flt = allData.filter(filterBytime);
+		  
+		   //console.log(flt);
+		  
+		   // return the aggregated count of the filtered elements
+		   count = d3.sum(flt, function(d) {return d.count});
+		   //debugger;
+		   // I doubt I need to set it back to return and comment console.log
+		   //return count;
+		   console.log(count);
+			
 
-
-
-
-
-
-
+ 
             // after you assigned a value to the count variable
             // this function checks if your count is correct
             // you need an active internet connection for this to work
+			// The aggregated count from 2013-01-01 to 2013-01-31 be 21835
             cs171Test.checkCount(count);
 
 
@@ -96,25 +117,43 @@
                         return res;
                     }
             )
-
-            console.log(allData);
+             //debugger;
+         
+			console.log(allData);
 
            // this function is the test function if your code works correct
             // you need an active internet connection for it to work
             cs171Test.allLoaded(allData,metaData);
 
-            // the aggreagte function is called with two parameters
+ 
+			// the aggreagte function is called with two parameters
             aggregateCountsForRange(dateFormatter.parse("2013-01-01"), dateFormatter.parse("2013-01-31"))
         }
 
-
-        // TODO: TASK 2 A -- implement your data loading here and then call "allLoaded(perDayData, metaData)"
-
-
-
-
-
-
+    
+		
+        // TASK 2 A -- implement your data loading here and then call "allLoaded(perDayData, metaData)"
+		// Load perDayData data into perDay var
+		
+		// Load data asynchronously
+		queue()
+                .defer(d3.json, "data/perDayData.json")
+                .defer(d3.json, "data/MYWorld_fields.json")
+				.await(dataLoaded);
+        
+        // Define the function dataLoaded which simply passes the args of allLoades plus error arg		
+	    function dataLoaded(error, allData, metaData) {
+         //get inspired by http://bl.ocks.org/mbostock/1696080
+  
+                allLoaded(allData, metaData);
+        }
+		
+	
+	
+	    // Call allLoaded function
+		allLoaded(allData, metaData);
+		
+				
 
     })
 

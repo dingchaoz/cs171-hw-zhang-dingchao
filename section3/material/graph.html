@@ -42,11 +42,11 @@
       .friction(0.5)
       .size([width, height]);
 
-  d3.json("characters.json", function(data) {
+  d3.json("miserables.json", function(data) {
 
     // Nodes data join
     var node = svg.selectAll(".node")
-        .data(data);
+        .data(data.nodes);
 
     node
       .enter().append("circle");
@@ -60,8 +60,8 @@
       .remove();
 
     force
-        .nodes(data)
-        .links([])
+        .nodes(data.nodes)
+        .links([data.links])
         .start();
 
     force.on("tick", function(e) {

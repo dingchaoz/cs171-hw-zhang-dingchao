@@ -15,3 +15,8 @@ h1 {
 p {
   font-size: 16px;
 }
+
+p#subheading {
+  color:darkgrey;
+  font-style:italic;
+}

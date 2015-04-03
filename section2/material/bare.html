@@ -33,7 +33,34 @@
   // Group used to enforce margin
   var g = svg.append("g")
               .attr("transform", "translate("+margin.left+","+margin.top+")");
-
+			  
+  var rect = g.selectAll("rect")
+              .data([10,45,105,69,80,55,200])
+			  .enter().append("rect");
+			  
+  var scale = d3.scale.linear()
+     .domain([0,200])
+	 .range([0,height])
+	 
+  var color = d3.scale.linear()
+     .domain([0,200])
+	 .range(["green","red"])
+	 
+  var bar_hight = 25;
+  
+  rect
+    .attr("fill", function(d,i) {
+	   return color(d);	
+	})
+    .attr("width", function(d,i){
+	   console.log(d,i);
+	   return scale(d);
+	})
+    .attr("height", bar_hight)
+    .attr("x", 50)
+    .attr("y", function(d,i){
+	   return (bar_hight + 5) * i;
+	});
   /////////////////////////
   ////// YOUR CODE ////////
   /////////////////////////

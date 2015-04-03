@@ -68,6 +68,11 @@
           // this could instead use an ordinal scale and rangeRoundBands()
           return (bar_height + 5) * i;
       });
+	  
+	  rect.append("title")
+	  .text(function(d,i) {
+	     return d["location"]["city"]
+	  });
   });
 
   d3.select("#filter-us-only").on("change", function() {
@@ -98,22 +103,48 @@
     // UPDATE
     // old elements
     rect
+	  .attr("width", function(d, i) {
+          return scale(d["temperature"]);
+      })
+	  .attr("y", function(d, i) {
+          // this could instead use an ordinal scale and rangeRoundBands()
+          return (bar_height + 5) * i;
+      });
       //...
 
     // ENTER
     // new elements
     rect.enter().append("rect")
+	  .attr("fill", "steelblue")
+      .attr("height", bar_height)
+      .attr("x", 0);
+	  
       //...
 
     // ENTER + UPDATE
     // both old and new elements
     rect
+	  .attr("width", function(d, i) {
+          return scale(d["temperature"]);
+      })
+	  .attr("y", function(d, i) {
+          // this could instead use an ordinal scale and rangeRoundBands()
+          return (bar_height + 5) * i;
+      });
       //...
 
     // EXIT
     // elements that aren't associated with data
     rect.exit()
+	    .remove();
       //...
+	  
+	  
+	rect.select("title")
+	    .text(function(d,i){
+		   return d["location"]["city"]
+		   });
+	   
 
   }
 
