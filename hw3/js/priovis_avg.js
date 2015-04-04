@@ -4,7 +4,7 @@
  * @param _eventHandler -- the Eventhandling Object to emit data to (see Task 4)
  * @constructor
  */
-PrioVis = function(_parentElement, _data, _metaData,_eventHandler){
+PrioVis_Avg = function(_parentElement, _data, _metaData,_eventHandler){
     this.parentElement = _parentElement;
     this.data = _data;
 	this.metaData = _metaData;
@@ -24,7 +24,7 @@ PrioVis = function(_parentElement, _data, _metaData,_eventHandler){
 /**
  * Method that sets up the SVG and the variables
  */
-PrioVis.prototype.initVis = function(){
+PrioVis_Avg.prototype.initVis = function(){
 
 	// constructs SVG layout
     this.svg = this.parentElement.append("svg")
@@ -81,7 +81,7 @@ PrioVis.prototype.initVis = function(){
  * @param _filterFunction - a function that filters data or "null" if none
  */
 //PrioVis.prototype.wrangleData= function(selectionStart, selectionEndn){
-PrioVis.prototype.wrangleData= function(_filterFunction){
+PrioVis_Avg.prototype.wrangleData= function(_filterFunction){
 
     // displayData should hold the data whiche is visualized
     this.displayData = this.filterAndAggregate(_filterFunction);
@@ -98,9 +98,9 @@ PrioVis.prototype.wrangleData= function(_filterFunction){
 /**
  * the drawing function - should use the D3 selection, enter, exit
  */
-PrioVis.prototype.updateVis = function(){
+PrioVis_Avg.prototype.updateVis = function(){
 
-    // Dear JS hipster,
+        // Dear JS hipster,
     // you might be able to pass some options as parameter _option
     // But it's not needed to solve the task.
     // var options = _options || {};
@@ -155,20 +155,8 @@ PrioVis.prototype.updateVis = function(){
 		  return (that.y(d));
 		  console.log(d);;
       });
-	  
-	  
-	  
-
-    // Update all inner rects and texts (both update and enter sets)
-	 //this.svg.selectAll(".bar")
-	     //.data(this.displayData)
-		 //.attr("y",function(d) {return that.height - that.y(d);
-	  //})
-	   //.attr("height", function(d, i) {
-		  //return (that.y(d));
-		  //console.log(d);;
-      //});
-
+			   
+	
 }
 
 
@@ -178,7 +166,7 @@ PrioVis.prototype.updateVis = function(){
  * be defined here.
  * @param selection
  */
-PrioVis.prototype.onSelectionChange = function (selectionStart, selectionEnd){
+PrioVis_Avg.prototype.onSelectionChange = function (selectionStart, selectionEnd){
 
     // TODO: call wrangle function
     var that = this;
@@ -202,7 +190,7 @@ PrioVis.prototype.onSelectionChange = function (selectionStart, selectionEnd){
  * Helper function that figures if there is sufficient space
  * to fit a label inside its bar in a bar chart
  */
-PrioVis.prototype.doesLabelFit = function(datum, label) {
+PrioVis_Avg.prototype.doesLabelFit = function(datum, label) {
   var pixel_per_character = 6;  // obviously a (rough) approximation
 
   return datum.type.length * pixel_per_character < this.x(datum.count);
@@ -214,7 +202,7 @@ PrioVis.prototype.doesLabelFit = function(datum, label) {
  * @returns {Array|*}
  */
 //PrioVis.prototype.filterAndAggregate = function(selectionStart, selectionEnd){
-PrioVis.prototype.filterAndAggregate = function(_filter){
+PrioVis_Avg.prototype.filterAndAggregate = function(_filter){
 
     // Set filter to a function that accepts all items
     // ONLY if the parameter _filter is NOT null use this parameter
@@ -223,35 +211,25 @@ PrioVis.prototype.filterAndAggregate = function(_filter){
         filter = _filter;
     }
     //Dear JS hipster, a more hip variant of this construct would be:
-    // var filter = _filter || function(){return true;}
-	
-	//var ds = selectionStart;
-	//var de = selectionEnd;
-	//console.log(selectionStart);
-	//console.log(ds);
-    
-    //function filterBytime(element) {
-      //if (element.time <= de && element.time >= ds) {
-         //return true;
-      //} else {
-         //return false;
-      //}
-    //};
-
-    //var that = this;
 	
 	var flt = this.data.filter(filter);
+	
+	
 
     var res = [];
 	
 	for (i = 0; i < 16; i++) {
-	       res.push(d3.sum(flt, function(d) {return d.prios[i]}));
+	       res.push(d3.sum(this.data, function(d) {return d.prios[i]}));
 		   console.log(res);
 	    }
 		
 	console.log(res);
    
+	if (flt.length > 1) {
 	
+	    res = res.map(function(d){return d*flt.length/396});
+	
+	}
 
     res.prio = [];
     for (i = 100; i < 116; i++)	{
@@ -260,22 +238,5 @@ PrioVis.prototype.filterAndAggregate = function(_filter){
 	//console.log(res.prio);
 	
 	return res;
-    //var counts = Object();
-
-    // Convert data into summary count format
-    //this.data
-      //.filter(filter)
-      //.forEach(function(d) {
-        //d.calls.forEach(function(c) {
-          //c.type in counts ? counts[c.type]++ : counts[c.type] = 1;
-        //});
-      //});
-
-    // Convert counts to an array and keep only the top 10
-    //counts = Object.keys(counts)
-      //.map(function (key) {return {"type": key, "count": counts[key]}; })
-      //.sort(function(a, b) { return a.count < b.count || (a.count === b.count) - 1; })
-      //.slice(0, 20);
-
-    //return counts;
+   
 }

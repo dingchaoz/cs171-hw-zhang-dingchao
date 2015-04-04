@@ -1,0 +1,9 @@
+I choose to compare the selected data against overall average scenario
+There are three alternative designs that would allow this comparison
+1. Show two comparisons on the same graph, with two bars belonging to the same prio be ajacent to each other
+   and distinct the two bars in the same prio with different color
+2. Show two comparisons on the same graph, with two bars beloning to the same prio overlap each other( same x location)
+   and to distinct the two bars in the same prio with different color and opacity, and use color to differentiate if it
+   is over the average or below the average, for example, if it is over the average show the difference with red, and show
+   the difference below average with blue   
+3. Show two comparisons at two different graphs side by side

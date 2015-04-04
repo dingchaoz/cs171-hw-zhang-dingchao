@@ -25,6 +25,7 @@
 
     <!-- add own vis classes-->
     <script src = "js/priovis.js"></script>
+	<script src = "js/priovis_avg.js"></script>
     <script src = "js/agevis.js"></script>
     <script src = "js/countvis.js"></script>
 
@@ -74,7 +75,20 @@
         </div>
 
         <div class="row">
+		<p>current prios in brushing window time range </p>
             <div class="col-md-12" id="prioVis">
+                <!-- TODO: delete placeholder svg element -->
+                <!-- <svg width="650" height="440" style="background-color: lightgreen">
+                    <text x="50" y="50">HERE should be PrioVis</text>
+                </svg>-->
+            </div>
+
+        </div>
+		
+		
+		<div class="row">
+		<p>average prios in brushing window interval, average prios = total prios * brushing window days / 396(total days) </p>
+            <div class="col-md-12" id="prioVis_avg">
                 <!-- TODO: delete placeholder svg element -->
                 <!-- <svg width="650" height="440" style="background-color: lightgreen">
                     <text x="50" y="50">HERE should be PrioVis</text>
@@ -124,13 +138,16 @@
                var count_vis = new CountVis(d3.select("#countVis"), allData, metaData, MyEventHandler);
                var age_vis = new AgeVis(d3.select("#ageVis"), allData, metaData, MyEventHandler);
                var prio_vis = new PrioVis(d3.select("#prioVis"), allData, metaData, MyEventHandler);
+			   var prio_visavg = new PrioVis_Avg(d3.select("#prioVis_avg"), allData, metaData, MyEventHandler);
                 
 				// TODO: bind the eventHandler to the Vis Objects
 				//$(MyEventHandler).bind("selectionChanged", function(event, startData, endDate){
 				$(MyEventHandler).bind("selectionChanged", function(event, startDate,endDate){
 				   // events will be consumed by the PrioVis and AgeVis object (binding should happen here)
                    age_vis.onSelectionChange(startDate, endDate);
-				   prio_vis.onSelectionChange(startData, endDate);
+				   prio_vis.onSelectionChange(startDate, endDate);
+				   //var prio_visavg = new PrioVis_Avg(d3.select("#prioVis_avg"), allData, metaData, MyEventHandler);
+				   prio_visavg.onSelectionChange(startDate, endDate);
                  });
                 // events will be created from the CountVis object (nothing to do here)
 
